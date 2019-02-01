@@ -1,1 +1,3 @@
-# tuPartidoManger
+# TuPartidoManger
+
+Qt aplication to manage stadiums
