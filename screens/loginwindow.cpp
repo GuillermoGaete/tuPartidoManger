@@ -51,6 +51,9 @@ void LoginWindow::centerScreen(){
 void LoginWindow::on_btnLogin_clicked()
 {
     this->ui->btnLogin->setEnabled(false);
+    this->ui->edtEmail->setEnabled(false);
+    this->ui->edtPassword->setEnabled(false);
+
     this->ui->statusbar->showMessage("Iniciando sesion...");
     this->ui->lblErrorMessage->setVisible(false);
 
@@ -94,6 +97,8 @@ void LoginWindow::onFinishLoginRequest(QNetworkReply *reply)
             this->ui->lblErrorMessage->setText(this->parseResponse(error));
             this->ui->lblErrorMessage->setVisible(true);
             this->ui->btnLogin->setEnabled(true);
+            this->ui->edtEmail->setEnabled(true);
+            this->ui->edtPassword->setEnabled(true);
             qDebug()<<"Error response"<<bytesResponse;
         break;
     }

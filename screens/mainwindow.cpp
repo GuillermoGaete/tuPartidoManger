@@ -43,7 +43,8 @@ void MainWindow::centerScreen(){
 }
 
 void MainWindow::setUpWindow(){
-    this->ui->btnPayTickets->setEnabled(false);
+    this->ui->btnPayTickets->setVisible(false);
+    this->ui->lblEmptyTickets->setVisible(false);
     this->ui->tableViewTickets->setModel(&this->ticketsModel);
 
     this->ticketsModel.setAuth(this->authToken);
@@ -60,8 +61,8 @@ void MainWindow::setUpWindow(){
 
     connect(this->ui->tableViewTickets->model(), SIGNAL(onItemsSelectedChange(bool)), this, SLOT(tooglePayButtom(bool)));
     connect(this->ui->tableViewTickets->model(), SIGNAL(startLoadingTickets()), this, SLOT(onLockDateControls()));
-    connect(this->ui->tableViewTickets->model(), SIGNAL(finishLoadingTickets()), this, SLOT(onUnLockDateControls()));
-    connect(this->ui->tableViewTickets->model(), SIGNAL(finishLoadingTickets()), this, SLOT(onDataChanged()));
+    connect(this->ui->tableViewTickets->model(), SIGNAL(finishLoadingTickets(bool)), this, SLOT(onUnLockDateControls(bool)));
+    connect(this->ui->tableViewTickets->model(), SIGNAL(insertTickets()), this, SLOT(onInsertTickets()));
 
     connect(this, SIGNAL(startListenTickets()), this->ui->tableViewTickets->model(), SLOT(startListen()));
     connect(this, SIGNAL(stopListenTickets()), this->ui->tableViewTickets->model(), SLOT(stopListen()));
@@ -82,23 +83,39 @@ void MainWindow::onCurrentDateChange(){
     //this->ticketsModel.setDate(date.toString("dd-MM-yyyy"));
     ui->lblSelectedDate->setText(date.toString("dd-MM-yyyy"));
     this->ui->statusBar->showMessage("Obteniendo el listado de pagos...");
+
     emit dateModelChange(date.toString("dd-MM-yyyy"));
 }
 
-void MainWindow::onDataChanged(){
-    this->ui->statusBar->showMessage("Listado recuperado.",3000);
+void MainWindow::onInsertTickets(){
+    this->ui->btnPayTickets->setVisible(true);
+    this->ui->lblEmptyTickets->setVisible(false);
+}
+void MainWindow::onDataChanged(bool isEmpty){
+    if(isEmpty){
+        this->ui->statusBar->showMessage("Sin pagos.",3000);
+        QString message = "No hay pagos para el día "+this->date.toString("dd-MM-yyyy")+".";
+        this->ui->lblEmptyTickets->setText(message);
+        this->ui->lblEmptyTickets->setVisible(true);
+        this->ui->btnPayTickets->setVisible(false);
+    }else{
+        this->ui->statusBar->showMessage("Listado recuperado.",3000);
+        this->ui->btnPayTickets->setVisible(true);
+    }
 }
 void MainWindow::onLockDateControls(){
+    this->ui->lblEmptyTickets->setVisible(false);
     ui->btnAddDay->setEnabled(false);
     ui->btnSubDay->setEnabled(false);
     ui->btnPayTickets->setEnabled(false);
     ui->tableViewTickets->setEnabled(false);
 }
-void MainWindow::onUnLockDateControls(){
+void MainWindow::onUnLockDateControls(bool isEmpy){
     ui->btnAddDay->setEnabled(true);
     ui->btnSubDay->setEnabled(true);
-    ui->btnPayTickets->setEnabled(true);
     ui->tableViewTickets->setEnabled(true);
+    this->onDataChanged(isEmpy);
+
 }
 
 MainWindow::~MainWindow()
@@ -162,7 +179,7 @@ void MainWindow::on_btnPayTickets_clicked()
 
     QMessageBox msgBox(QMessageBox::Question,"Confirmar pago",message, QMessageBox::Yes | QMessageBox::No);
 
-    msgBox.setButtonText(QMessageBox::Yes,"Yes");
+    msgBox.setButtonText(QMessageBox::Yes,"Si");
     msgBox.setButtonText(QMessageBox::No, "No");
 
     if (msgBox.exec() == QMessageBox::Yes) {

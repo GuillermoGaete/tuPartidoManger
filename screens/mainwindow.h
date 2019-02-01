@@ -34,10 +34,11 @@ private slots:
      void onTableClicked(const QModelIndex &index);
      void tooglePayButtom(bool status);
      void on_btnPayTickets_clicked();
+
 public slots:
      void onLockDateControls();
-     void onUnLockDateControls();
-     void onDataChanged();
+     void onUnLockDateControls(bool isEmpty);
+     void onInsertTickets();
 
 signals:
      void startListenTickets();
@@ -57,6 +58,7 @@ private:
     QString userId;
     QJsonObject userData;
     void getStadiumInformation();
+    void onDataChanged(bool isEmpty);
     QDate date;
     TicketsModel ticketsModel;
 

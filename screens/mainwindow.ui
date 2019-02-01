@@ -104,6 +104,33 @@
        <string>Marcar como pago</string>
       </property>
      </widget>
+     <widget class="QLabel" name="lblEmptyTickets">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>90</y>
+        <width>261</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <weight>50</weight>
+        <italic>true</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>No hay pagos para el día 01-01-2018</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tabAdminStadium">
      <attribute name="title">
@@ -168,6 +195,7 @@
      <property name="font">
       <font>
        <weight>75</weight>
+       <italic>true</italic>
        <bold>true</bold>
       </font>
      </property>
@@ -202,6 +230,11 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
      </property>
      <property name="text">
       <string>Cargando...</string>

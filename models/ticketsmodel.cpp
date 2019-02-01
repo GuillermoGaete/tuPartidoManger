@@ -24,12 +24,13 @@ TicketsModel::TicketsModel()
 }
 
 bool TicketsModel::addTicket(Ticket newTicket){
-
     int newRow = this->tickets.count();
     beginInsertRows(QModelIndex(), newRow, newRow);
     this->tickets.append(newTicket);
     endInsertRows();
-
+    if(newRow==0){
+        emit insertTickets();
+    }
     return true;
 }
 
@@ -160,10 +161,6 @@ void TicketsModel::onTicketsDataChanged(QByteArray array,int statusCode){
 }
 
 void TicketsModel::processChangeOnTickets(QString path,QJsonValue data, QString event){
-    if(this->fisrtRequest){
-        this->fisrtRequest=false;
-        emit finishLoadingTickets();
-    }
     if(event=="put"){
         if(path=="/"){//se recibieron varios tickets
             QJsonObject dataJsonObject = data.toObject();
@@ -193,6 +190,10 @@ void TicketsModel::processChangeOnTickets(QString path,QJsonValue data, QString 
                 qDebug()<<"No se reconoce el evento:"<<event<<", con el path: "<<path<<"\n";
             }
         }
+    }
+    if(this->fisrtRequest){
+        this->fisrtRequest=false;
+        emit finishLoadingTickets(this->tickets.empty());
     }
 }
 
@@ -253,7 +254,7 @@ QVariant TicketsModel::headerData(int section, Qt::Orientation orientation, int 
             case 0:
                 return QString("");
             case 1:
-                return QString("Concepto");
+                return QString("Usuario");
             case 2:
                 return QString("Concepto");
             case 3:
@@ -281,7 +282,7 @@ QVariant TicketsModel::data(const QModelIndex &index, int role) const
             return currentTicket.getOwner();
         }
         if(col==2){
-            return QString("Pago de video");
+            return QString("Video");
         }
         if(col==3){
              return currentTicket.getMatchStartAt();
@@ -303,24 +304,20 @@ QVariant TicketsModel::data(const QModelIndex &index, int role) const
         }
         break;
     case Qt::BackgroundColorRole:
-        if (col == 5) //change font only for col status pay
-        {
-            if(currentTicket.isPending()){
-                if(currentTicket.isSelected()){
-                    QColor red = QColor::fromRgb(174, 214, 241);
-                    return QVariant(red);
-                }
-                QColor red = QColor::fromRgb(255, 204, 204);
-                return QVariant(red);
-            }
-        }else{
             if(currentTicket.isSelected()){
                 QColor red = QColor::fromRgb(174, 214, 241);
                 return QVariant(red);
             }else{
-                return QVariant();
+                if (col == 5)
+                {
+                    if(currentTicket.isPending()){
+                        QColor red = QColor::fromRgb(255, 204, 204);
+                        return QVariant(red);
+                    }
+                }else{
+                    return QVariant();
+                }
             }
-        }
         break;
     case Qt::CheckStateRole:
             if (col == 0) //add a checkbox to cell(1,0)

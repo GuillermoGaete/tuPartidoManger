@@ -29,8 +29,9 @@ public:
 
 signals:
     void onItemsSelectedChange(bool status);
-    void finishLoadingTickets();
+    void finishLoadingTickets(bool isEmpty);
     void startLoadingTickets();
+    void insertTickets();
 
 private slots:
     void onTicketsDataChanged(QByteArray array,int statusCode);
